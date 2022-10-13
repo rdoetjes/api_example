@@ -1,0 +1,4 @@
+
+[global.tls]
+certs = "./cert.pem"
+key = "./my_unencrypted_key.pem"
