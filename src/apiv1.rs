@@ -32,7 +32,13 @@ pub fn query(name: String) -> String {
         },
     };
     
-    let mut t = statement.bind(1, &*name).unwrap();
+    let mut t = match statement.bind(1, &*name) {
+        Ok(statement) => statement,
+        Err(e) => { 
+            return format!("Problem binding params: {:?}", e)
+        },
+    };
+
     while let State::Row = t.next().unwrap() {
         result += "Name: ";
         result += t.read::<String>(0).unwrap().as_str();
