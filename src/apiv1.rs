@@ -13,7 +13,7 @@ pub fn test(name: String, age: u8) -> String{
 }
 
 #[get("/query/<name>")]
-pub fn query(name: String) -> String{
+pub fn query(name: String) -> String {
     let conn = sqlite::open("./test.db").expect("Whoops database not found");
     let mut result: String = "".to_string();
 
@@ -26,6 +26,30 @@ pub fn query(name: String) -> String{
         result += statement.read::<String>(1).unwrap().as_str();
         result += "\r\n";
     }
-    
     result
+}
+
+#[cfg(test)]
+mod tests {
+
+    #[test]
+    fn test_query(){
+        let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/50").expect("Woops").text().unwrap();
+        assert!(resp.contains("Oh dear Ray, you are considered an old man aka a boomer"));
+
+        let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/49").expect("Woops").text().unwrap();
+        assert!(resp.contains("Hello Ray, you are wise and ripe and not yet old"));
+
+        let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/30").expect("Woops").text().unwrap();
+        assert!(resp.contains("Hello Ray, you are wise and ripe and not yet old"));
+
+        let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/29").expect("Woops").text().unwrap();
+        assert!(resp.contains("Hi Ray, I see you are an inexperienced noob"));
+
+        let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/79").expect("Woops").text().unwrap();
+        assert!(resp.contains("Oh dear Ray, you are considered an old man aka a boomer"));
+
+        let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/80").expect("Woops").text().unwrap();
+        assert!(resp.contains("dinosaur"));
+    }
 }
