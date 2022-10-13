@@ -33,7 +33,7 @@ pub fn query(name: String) -> String {
 mod tests {
 
     #[test]
-    fn test_query(){
+    fn test_sayhi(){
         let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/50").expect("Woops").text().unwrap();
         assert!(resp.contains("Oh dear Ray, you are considered an old man aka a boomer"));
 
@@ -52,4 +52,18 @@ mod tests {
         let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/80").expect("Woops").text().unwrap();
         assert!(resp.contains("dinosaur"));
     }
+
+    #[test]
+    fn test_query(){
+        let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/query/Raymond").expect("Woops").text().unwrap();
+        assert!(resp.contains("Raymond"));
+        assert!(resp.contains("Developer"));
+        assert!(resp.contains("CEO"));
+
+        let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/query/Rene").expect("Woops").text().unwrap();
+        assert!(resp.contains("Rene"));
+        assert!(resp.contains("Developer"));
+        assert!(!resp.contains("CEO"));  
+    }
+
 }
