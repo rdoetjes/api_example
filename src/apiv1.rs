@@ -1,4 +1,5 @@
 use sqlite::State;
+use std::process;
 
 #[get("/sayhi/<name>/<age>")]
 pub fn test(name: String, age: u8) -> String{
@@ -14,16 +15,30 @@ pub fn test(name: String, age: u8) -> String{
 
 #[get("/query/<name>")]
 pub fn query(name: String) -> String {
-    let conn = sqlite::open("./test.db").expect("Whoops database not found");
+    let conn = match sqlite::open("./test.db")  {
+        Ok(conn) => conn,
+        Err(e) => { 
+            eprintln!("Could not connect to database: {}", e);
+            process::exit(1)
+        }
+    };
+
     let mut result: String = "".to_string();
 
-    let mut statement = conn.prepare("SELECT * FROM test where name = ?1").unwrap().bind(1, &*name).unwrap();
-    while let State::Row = statement.next().unwrap() {
+    let statement = match conn.prepare("SELECT * FROM test where name = ?1") {
+        Ok(statement) => statement,
+        Err(e) => { 
+            return format!("Problem opening the file: {:?}", e)
+        },
+    };
+    
+    let mut t = statement.bind(1, &*name).unwrap();
+    while let State::Row = t.next().unwrap() {
         result += "Name: ";
-        result += statement.read::<String>(0).unwrap().as_str();
+        result += t.read::<String>(0).unwrap().as_str();
         result += " ";
         result += "Description: ";
-        result += statement.read::<String>(1).unwrap().as_str();
+        result += t.read::<String>(1).unwrap().as_str();
         result += "\r\n";
     }
     result
