@@ -26,7 +26,7 @@ pub fn query(name: String) -> String {
     let statement = match conn.prepare("SELECT * FROM test where name = ?1") {
         Ok(statement) => statement,
         Err(e) => { 
-            return format!("Problem opening the file: {:?}", e)
+            return format!("Problem running query: {:?}", e)
         },
     };
     
