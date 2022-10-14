@@ -10,7 +10,7 @@
 ## CD of certificate and key
     Deployment of certificates are easily doable in Conitnous Deliver (CD), where we can copy the generated certificate and key in to the Docker container during it's creation.<br />
     By simply copying them to the locations as definied in the Rocket.toml and these files need to be only be readable by the NPA user that runs the service.<br />
-<br />
+
 ## Docker is your friend
     Since we create by default a statically linked binary, we do not have to worry about installing Runtime envinments in our Dockerfile and keeping those up to date in order to keep the code running (right .Net and JRE!!!)
     
