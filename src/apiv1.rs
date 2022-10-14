@@ -3,7 +3,7 @@ use crate::appconfig;
 
 
 #[get("/v1/test/sayhi/<name>/<age>")]
-pub fn test(name: String, age: u8) -> String{
+pub fn sayhi(name: String, age: u8) -> String{
 
     match age {
         age if age < 30 => format!("Hi {}, I see you are an inexperienced noob", name),
@@ -55,9 +55,14 @@ pub fn query(name: String) -> String {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
 
     #[test]
     fn test_sayhi(){
+        let s = sayhi("Ray".to_string(), 49);
+
+        assert!(s.contains("but not yet old"));
+
         let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/50").expect("Woops").text().unwrap();
         assert!(resp.contains("Oh dear Ray, you are considered an old man aka a boomer"));
 
