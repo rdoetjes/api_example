@@ -7,7 +7,7 @@ pub fn test(name: String, age: u8) -> String{
 
     match age {
         age if age < 30 => format!("Hi {}, I see you are an inexperienced noob", name),
-        age if age >=30 && age < 50  => format!("Hello {}, you are wise and ripe and not yet old", name),
+        age if age >=30 && age < 50  => format!("Hello {}, you are wise and ripe but not yet old", name),
         age if age >= 50 && age <80 => format!("Oh dear {}, you are considered an old man aka a boomer", name),
         age if age >= 80 => format!("Yoh people! {} here, is so old that he walked with the dinosaurs!", name),
         _ => "".to_string(),
