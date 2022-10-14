@@ -90,6 +90,9 @@ mod tests {
         assert!(resp.contains("Rene"));
         assert!(resp.contains("Developer"));
         assert!(!resp.contains("CEO"));  
+
+        let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/query/NONE_EXISTING").expect("Woops").text().unwrap();
+        assert!(resp.contains("No records found"));
     }
 
 }
