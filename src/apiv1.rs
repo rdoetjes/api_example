@@ -17,9 +17,9 @@ pub fn test(name: String, age: u8) -> String{
 
 #[get("/query/<name>")]
 pub fn query(name: String) -> String {
-    appconfig::check_dbfile(appconfig::DATABASE);
+    appconfig::check_dbfile(appconfig::DATABASE_FILE);
 
-    let conn =  sqlite::open(appconfig::DATABASE).expect("Database not readable!"); //we can unwrap we checked the file exists
+    let conn =  sqlite::open(appconfig::DATABASE_FILE).expect("Database not readable!"); //we can unwrap we checked the file exists
 
     let mut result: String = "".to_string();
 
