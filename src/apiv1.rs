@@ -2,7 +2,7 @@ use sqlite::State;
 use crate::appconfig;
 
 
-#[get("/sayhi/<name>/<age>")]
+#[get("/v1/test/sayhi/<name>/<age>")]
 pub fn test(name: String, age: u8) -> String{
 
     match age {
@@ -15,7 +15,7 @@ pub fn test(name: String, age: u8) -> String{
 }
 
 
-#[get("/query/<name>")]
+#[get("/v1/test/query/<name>")]
 pub fn query(name: String) -> String {
     appconfig::check_dbfile(appconfig::DATABASE_FILE);
 

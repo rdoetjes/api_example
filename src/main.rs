@@ -8,5 +8,5 @@ mod appconfig;
 #[launch]
 fn rocket() -> _ {
     appconfig::check_dbfile(appconfig::DATABASE_FILE);
-    rocket::build().mount("/api/v1/test", routes![apiv1::test, apiv1::query])
+    rocket::build().mount("/api/", routes![apiv1::test, apiv1::query])
 }
