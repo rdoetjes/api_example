@@ -47,6 +47,11 @@ pub fn query(name: String) -> String {
         result += t.read::<String>(1).unwrap().as_str();
         result += "\r\n";
     }
+
+    if result == "" {
+        result += "No records found";
+    }
+
     result
 }
 
