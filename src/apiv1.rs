@@ -1,10 +1,12 @@
 use sqlite::State;
 use crate::appconfig;
 
-
+/*
+The url is build up as /<version>/<suite>/<function>
+therefore /v1/test/sayhi/<name>/<age> means version1, test suite and function sayhi
+*/
 #[get("/v1/test/sayhi/<name>/<age>")]
 pub fn sayhi(name: String, age: u8) -> String{
-
     match age {
         age if age < 30 => format!("Hi {}, I see you are an inexperienced noob", name),
         age if age >=30 && age < 50  => format!("Hello {}, you are wise and ripe but not yet old", name),
