@@ -9,3 +9,8 @@ edition = "2021"
 rocket = { version = "0.5.0-rc.2", features = ["tls"] }
 sqlite = "0.27.0"
 reqwest = { version = "0.11.12", features = ["blocking"] }
+
+[profile.release]
+strip = true     #strip symbols from binary
+lto = true       #enable link time operation
+opt-level = "s"  #optimize for size 
