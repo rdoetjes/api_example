@@ -1,5 +1,15 @@
 use sqlite::State;
 use std::process;
+use std::path::Path;
+
+use crate::appconfig;
+
+pub fn check_dbfile(file_name: &str){
+    if ! Path::new(&file_name).exists(){
+        eprintln!("Can't find database {}", file_name);
+        process::exit(1);
+    } 
+}
 
 #[get("/sayhi/<name>/<age>")]
 pub fn test(name: String, age: u8) -> String{
@@ -13,15 +23,12 @@ pub fn test(name: String, age: u8) -> String{
     }
 }
 
+
 #[get("/query/<name>")]
 pub fn query(name: String) -> String {
-    let conn = match sqlite::open("./test.db")  {
-        Ok(conn) => conn,
-        Err(e) => { 
-            eprintln!("Could not connect to database: {}", e);
-            process::exit(1)
-        }
-    };
+    check_dbfile(appconfig::DATABASE);
+
+    let conn =  sqlite::open(appconfig::DATABASE).unwrap();
 
     let mut result: String = "".to_string();
 
