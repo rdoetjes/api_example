@@ -65,7 +65,19 @@ mod tests {
         let s = sayhi("Ray".to_string(), 49);
         assert!(s.contains("but not yet old"));
 
-        //these are technically integration tests as they use a service
+        /*
+        These are technically integration or system tests as they actually connect to the service that needs to run.
+        In order for these tests to succeed with the self signed certificate with the cn=api.phonax.com, I created a hosts file entry
+        in /etc/hosts 
+        127.0.0.1	api.phonax.com
+        Without this you would get a Warning: tls handshake with 127.0.0.1:xxxxxx failed: tls handshake eof error because 
+        Reqwest at standard validates the hostname (as it should!!!)
+
+        Deployment of certificates are easily doable in CD part where we can put down the generated certificate and key
+        in the predefined locations as described in the Rocket.toml and these can (and should) only be readable by the NPA user
+        that runs the service.
+        And this all can easily be part of the Docker creation process.
+        */ 
         let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/50").expect("Woops").text().unwrap();
         assert!(resp.contains("Oh dear Ray, you are considered an old man aka a boomer"));
 
