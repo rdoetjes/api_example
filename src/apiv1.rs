@@ -62,10 +62,10 @@ mod tests {
         assert!(resp.contains("Oh dear Ray, you are considered an old man aka a boomer"));
 
         let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/49").expect("Woops").text().unwrap();
-        assert!(resp.contains("Hello Ray, you are wise and ripe and not yet old"));
+        assert!(resp.contains("Hello Ray, you are wise and ripe but not yet old"));
 
         let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/30").expect("Woops").text().unwrap();
-        assert!(resp.contains("Hello Ray, you are wise and ripe and not yet old"));
+        assert!(resp.contains("Hello Ray, you are wise and ripe but not yet old"));
 
         let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/29").expect("Woops").text().unwrap();
         assert!(resp.contains("Hi Ray, I see you are an inexperienced noob"));
