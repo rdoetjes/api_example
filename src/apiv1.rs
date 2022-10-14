@@ -60,7 +60,6 @@ mod tests {
     #[test]
     fn test_sayhi(){
         let s = sayhi("Ray".to_string(), 49);
-
         assert!(s.contains("but not yet old"));
 
         let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/50").expect("Woops").text().unwrap();
