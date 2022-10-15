@@ -29,7 +29,7 @@ pub fn sayhi(name: String, age: u8) -> String{
 pub fn create(user: Json<User>) -> String{
     let conn =  sqlite::open(appconfig::DATABASE_FILE).expect("Database not readable!"); //we can unwrap we checked the file exists
 
-    let result: String = "SAVED".to_string();
+    let result: String = "SUCCESS".to_string();
     let _statement = match conn.execute(format!("INSERT INTO test values ('{}', '{}')", &*user.name, &*user.function) ){
         Ok(statement) => statement,
         Err(e) => { 
@@ -44,7 +44,7 @@ pub fn create(user: Json<User>) -> String{
 pub fn delete(user: Json<User>) -> String{
     let conn =  sqlite::open(appconfig::DATABASE_FILE).expect("Database not readable!"); //we can unwrap we checked the file exists
 
-    let result: String = "DELETED".to_string();
+    let result: String = "SUCCESS".to_string();
     let _statement = match conn.execute(format!("DELETE FROM test where name='{}' and desc='{}'", &*user.name, &*user.function) ){
         Ok(statement) => statement,
         Err(e) => { 
@@ -161,14 +161,14 @@ mod tests {
             .header("Content-Type", "application/json")
             .body(&*content)
             .send().unwrap().text().unwrap();
-        assert!(t.contains("SAVED"));
+        assert!(t.contains("SUCCESS"));
 
         let t = client
             .post("https://api.phonax.com:8000/api/v1/test/delete")
             .header("Content-Type", "application/json")
             .body(&*content)
             .send().unwrap().text().unwrap();
-        assert!(t.contains("DELETED"));
+        assert!(t.contains("SUCCESS"));
     }
 
 }
