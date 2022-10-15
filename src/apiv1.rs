@@ -163,7 +163,6 @@ mod tests {
             .send().unwrap().text().unwrap();
         assert!(t.contains("SAVED"));
 
-        let client = reqwest::blocking::Client::new();
         let t = client
             .post("https://api.phonax.com:8000/api/v1/test/delete")
             .header("Content-Type", "application/json")
