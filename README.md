@@ -1,5 +1,7 @@
 # PoC for Rust API using Rocket with TLS
+This is just a proof of concept to see if TLS and mutual TLS can be implemented. And how we would need to deploy the certificates -- every framework has it's own method. And in order to give my client a correct time estimate on implementing this with the whole certificate life cycle management, I started this PoC and decided to share it's development on my youtube channel.
 
+So the database only has a very crued create (no id's etc) and read and delete, I did not even bother to implement an update. The database implementation is more a demo piece for the video, and holds no secrets for us.
 
 ## Host configuration to run reqwest integration tests
 In order for these tests to succeed with the self signed certificate with the cn=api.phonax.com, I created a hosts in the /etc/hosts file<br />
