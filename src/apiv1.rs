@@ -1,5 +1,13 @@
+use serde::Deserialize;
 use sqlite::State;
 use crate::appconfig;
+use rocket::serde::json::Json;
+
+#[derive(Deserialize)]
+pub struct User {
+    name: String,
+    function: String,
+}
 
 /*
 The url is build up as /<version>/<suite>/<function>
@@ -16,6 +24,21 @@ pub fn sayhi(name: String, age: u8) -> String{
     }
 }
 
+
+#[post("/v1/test/save", format = "json", data = "<user>")]
+pub fn create(user: Json<User>) -> String{
+    let conn =  sqlite::open(appconfig::DATABASE_FILE).expect("Database not readable!"); //we can unwrap we checked the file exists
+
+    let result: String = "SAVED".to_string();
+    let _statement = match conn.execute(format!("INSERT INTO test values ('{}', '{}')", &*user.name, &*user.function) ){
+        Ok(statement) => statement,
+        Err(e) => { 
+            return format!("Problem running query: {:?}", e)
+        },
+    };
+
+    result
+}
 
 #[get("/v1/test/query/<name>")]
 pub fn query(name: String) -> String {
