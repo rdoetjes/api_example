@@ -25,12 +25,27 @@ pub fn sayhi(name: String, age: u8) -> String{
 }
 
 
-#[post("/v1/test/save", format = "json", data = "<user>")]
+#[post("/v1/test/create", format = "json", data = "<user>")]
 pub fn create(user: Json<User>) -> String{
     let conn =  sqlite::open(appconfig::DATABASE_FILE).expect("Database not readable!"); //we can unwrap we checked the file exists
 
     let result: String = "SAVED".to_string();
     let _statement = match conn.execute(format!("INSERT INTO test values ('{}', '{}')", &*user.name, &*user.function) ){
+        Ok(statement) => statement,
+        Err(e) => { 
+            return format!("Problem running query: {:?}", e)
+        },
+    };
+
+    result
+}
+
+#[post("/v1/test/delete", format = "json", data = "<user>")]
+pub fn delete(user: Json<User>) -> String{
+    let conn =  sqlite::open(appconfig::DATABASE_FILE).expect("Database not readable!"); //we can unwrap we checked the file exists
+
+    let result: String = "DELETED".to_string();
+    let _statement = match conn.execute(format!("DELETE FROM test where name='{}' and desc='{}'", &*user.name, &*user.function) ){
         Ok(statement) => statement,
         Err(e) => { 
             return format!("Problem running query: {:?}", e)
@@ -134,6 +149,27 @@ mod tests {
 
         let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/query/NONE_EXISTING").expect("Woops").text().unwrap();
         assert!(resp.contains("No records found"));
+    }
+
+    #[test]
+    fn test_save(){
+        let content: &str = "{ \"name\": \"test_suite\", \"function\": \"Developer\" }";
+
+        let client = reqwest::blocking::Client::new();
+        let t = client
+            .post("https://api.phonax.com:8000/api/v1/test/create")
+            .header("Content-Type", "application/json")
+            .body(&*content)
+            .send().unwrap().text().unwrap();
+        assert!(t.contains("SAVED"));
+
+        let client = reqwest::blocking::Client::new();
+        let t = client
+            .post("https://api.phonax.com:8000/api/v1/test/delete")
+            .header("Content-Type", "application/json")
+            .body(&*content)
+            .send().unwrap().text().unwrap();
+        assert!(t.contains("DELETED"));
     }
 
 }
