@@ -20,10 +20,12 @@ impl Default for User {
 }
 
 
-/*
-The url is build up as /<version>/<suite>/<function>
-therefore /v1/test/sayhi/<name>/<age> means version1, test suite and function sayhi
-*/
+// sayhi(name: String, age: u8) gives back a demotivational quote unless your age is between 30 and 49
+//
+// sayhi(name: String, age: u8) is there to (de)motivate you, what is life without a good quote???
+// It returns a string based on age ranges
+//
+// Usage:  println!(sayhi("Ray", 49));
 #[get("/v1/test/sayhi/<name>/<age>")]
 pub fn sayhi(name: String, age: u8) -> String{
     match age {
@@ -35,6 +37,12 @@ pub fn sayhi(name: String, age: u8) -> String{
     }
 }
 
+// create(user: User) saves user into database
+//
+// create takes a User struct and saves it to the database
+// It returns "SUCCESS" or an "Error message"
+//
+// Usage:  create(user)
 pub fn create(user: User) -> String{
     let conn =  sqlite::open(appconfig::DATABASE_FILE).expect("Database not readable!"); //we can unwrap we checked the file exists
 
@@ -49,6 +57,14 @@ pub fn create(user: User) -> String{
     result
 }
 
+// Converts a Json<User> object into a User struct
+//
+// You do not want to deal with Json<User> objects in your logic but with just the stand structures
+// this makes code 
+// - more readable
+// - and allows for better abstraction
+//
+// Usage:  create(fill_user_with_userjson(&user))
 fn fill_user_with_userjson(user: &Json<User>) -> User {
     let mut t = User::default();
     t.name = user.name.to_owned();
@@ -56,11 +72,24 @@ fn fill_user_with_userjson(user: &Json<User>) -> User {
     t
 }
 
+// web_create(user: Json<User>) eventually saves user into database using create()
+//
+// web_create takes in a serialized Json<User> object than converts it to a User struct and saves it to the database
+// It returns "SUCCESS" or an "Error message"
+//
+// Usage:  web_create(user)
 #[post("/v1/test/create", format = "json", data = "<user>")]
 pub fn web_create(user: Json<User>) -> String{
     create(fill_user_with_userjson(&user))
 }
 
+
+// delete(user: User) saves user into database
+//
+// delete takes a User struct and deletes the matching record(s) from the database matching all the attributes in the user struct
+// It returns "SUCCESS" or an "Error message"
+//
+// Usage:  delete(user)
 pub fn delete(user: User) -> String {
     let conn =  sqlite::open(appconfig::DATABASE_FILE).expect("Database not readable!"); //we can unwrap we checked the file exists
 
@@ -74,11 +103,26 @@ pub fn delete(user: User) -> String {
     result
 }
 
+// web_delete(user: Json<User>) eventually saves user into database using create()
+//
+// web_delete takes in a serialized Json<User> object than converts it to a User struct and deletes the record(s) that 
+// match all the criteria of the User struct
+// It returns "SUCCESS" or an "Error message"
+//
+// Usage:  web_delete(user)
 #[post("/v1/test/delete", format = "json", data = "<user>")]
 pub fn web_delete(user: Json<User>) -> String{
     delete(fill_user_with_userjson(&user))
 }
 
+// query(name: String) searches for a name in the database and returns those records in string format
+//
+// query(name: String) searches for all records where column value 'name' is equal to name 
+// and returns all the records in string format that looks like:
+// Name: Raymond Description: CEO
+// Name: Raymond Description: Developer
+//
+// Usage:  query("Raymond".to_string())
 #[get("/v1/test/query/<name>")]
 pub fn query(name: String) -> String {
     appconfig::check_dbfile(appconfig::DATABASE_FILE);
