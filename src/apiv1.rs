@@ -1,9 +1,11 @@
-use serde::Deserialize;
+use rocket::serde::{Deserialize, Serialize};
 use sqlite::State;
 use crate::appconfig;
 use rocket::serde::json::Json;
 
-#[derive(Deserialize)]
+
+#[derive(Serialize, Deserialize)]
+#[serde(crate = "rocket::serde")]
 pub struct User {
     name: String,
     function: String,
@@ -116,59 +118,87 @@ mod tests {
         that runs the service.
         And this all can easily be part of the Docker creation process.
         */ 
-        let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/50").expect("Woops").text().unwrap();
-        assert!(resp.contains("Oh dear Ray, you are considered an old man aka a boomer"));
 
-        let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/49").expect("Woops").text().unwrap();
-        assert!(resp.contains("Hello Ray, you are wise and ripe but not yet old"));
+        //integration tests
+        // let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/50").expect("Woops").text().unwrap();
+        // assert!(resp.contains("Oh dear Ray, you are considered an old man aka a boomer"));
 
-        let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/30").expect("Woops").text().unwrap();
-        assert!(resp.contains("Hello Ray, you are wise and ripe but not yet old"));
+        // let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/49").expect("Woops").text().unwrap();
+        // assert!(resp.contains("Hello Ray, you are wise and ripe but not yet old"));
 
-        let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/29").expect("Woops").text().unwrap();
-        assert!(resp.contains("Hi Ray, I see you are an inexperienced noob"));
+        // let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/30").expect("Woops").text().unwrap();
+        // assert!(resp.contains("Hello Ray, you are wise and ripe but not yet old"));
 
-        let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/79").expect("Woops").text().unwrap();
-        assert!(resp.contains("Oh dear Ray, you are considered an old man aka a boomer"));
+        // let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/29").expect("Woops").text().unwrap();
+        // assert!(resp.contains("Hi Ray, I see you are an inexperienced noob"));
 
-        let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/80").expect("Woops").text().unwrap();
-        assert!(resp.contains("dinosaur"));
+        // let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/79").expect("Woops").text().unwrap();
+        // assert!(resp.contains("Oh dear Ray, you are considered an old man aka a boomer"));
+
+        // let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/sayhi/Ray/80").expect("Woops").text().unwrap();
+        // assert!(resp.contains("dinosaur"));
     }
 
     #[test]
     fn test_query(){
-        let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/query/Raymond").expect("Woops").text().unwrap();
-        assert!(resp.contains("Raymond"));
-        assert!(resp.contains("Developer"));
-        assert!(resp.contains("CEO"));
+        let s = query("Raymond".to_owned());
+        assert!(s.contains("Raymond"));
+        assert!(s.contains("Developer"));
+        assert!(s.contains("CEO"));
 
-        let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/query/Rene").expect("Woops").text().unwrap();
-        assert!(resp.contains("Rene"));
-        assert!(resp.contains("Developer"));
-        assert!(!resp.contains("CEO"));  
+        //integration tests
+        // let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/query/Raymond").expect("Woops").text().unwrap();
+        // assert!(resp.contains("Raymond"));
+        // assert!(resp.contains("Developer"));
+        // assert!(resp.contains("CEO"));
 
-        let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/query/NONE_EXISTING").expect("Woops").text().unwrap();
-        assert!(resp.contains("No records found"));
+        // let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/query/Rene").expect("Woops").text().unwrap();
+        // assert!(resp.contains("Rene"));
+        // assert!(resp.contains("Developer"));
+        // assert!(!resp.contains("CEO"));  
+
+        // let resp = reqwest::blocking::get("https://api.phonax.com:8000/api/v1/test/query/NONE_EXISTING").expect("Woops").text().unwrap();
+        // assert!(resp.contains("No records found"));
     }
 
     #[test]
     fn test_save(){
-        let content: &str = "{ \"name\": \"test_suite\", \"function\": \"Developer\" }";
 
-        let client = reqwest::blocking::Client::new();
-        let t = client
-            .post("https://api.phonax.com:8000/api/v1/test/create")
-            .header("Content-Type", "application/json")
-            .body(&*content)
-            .send().unwrap().text().unwrap();
+        let user = User{
+            name: "test_suite".to_owned(),
+            function: "Developer".to_owned(),
+
+        };
+        
+        let t = create(rocket::serde::json::Json(user));
         assert!(t.contains("SUCCESS"));
 
-        let t = client
-            .post("https://api.phonax.com:8000/api/v1/test/delete")
-            .header("Content-Type", "application/json")
-            .body(&*content)
-            .send().unwrap().text().unwrap();
+        let user = User{
+            name: "test_suite".to_owned(),
+            function: "Developer".to_owned(),
+
+        };
+        let t = delete(rocket::serde::json::Json(user));
+        println!("{}", t);
         assert!(t.contains("SUCCESS"));
+
+        // //integration tests
+        // let content: &str = "{ \"name\": \"test_suite\", \"function\": \"Developer\" }";
+
+        // let client = reqwest::blocking::Client::new();
+        // let t = client
+        //     .post("https://api.phonax.com:8000/api/v1/test/create")
+        //     .header("Content-Type", "application/json")
+        //     .body(&*content)
+        //     .send().unwrap().text().unwrap();
+        // assert!(t.contains("SUCCESS"));
+
+        // let t = client
+        //     .post("https://api.phonax.com:8000/api/v1/test/delete")
+        //     .header("Content-Type", "application/json")
+        //     .body(&*content)
+        //     .send().unwrap().text().unwrap();
+        // assert!(t.contains("SUCCESS"));
     }
 
 }
