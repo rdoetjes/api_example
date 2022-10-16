@@ -48,10 +48,10 @@ pub fn sayhi(name: String, age: u8) -> String{
 ///
 /// Usage:  
 /// ```rust
-/// create(user)
+/// create(&user)
 /// ```
 /// 
-pub fn create(user: User) -> String{
+pub fn create(user: &User) -> String{
     let conn =  sqlite::open(appconfig::DATABASE_FILE).expect("Database not readable!"); //we can unwrap we checked the file exists
 
     let result: String = "SUCCESS".to_string();
@@ -75,7 +75,7 @@ pub fn create(user: User) -> String{
 /// 
 /// Usage:  
 /// ```rust
-/// create(fill_user_with_userjson(&user))
+/// create(&fill_user_with_userjson(&user))
 /// ```
 /// 
 fn fill_user_with_userjson(user: &Json<User>) -> User {
@@ -97,7 +97,7 @@ fn fill_user_with_userjson(user: &Json<User>) -> User {
 /// 
 #[post("/v1/test/create", format = "json", data = "<user>")]
 pub fn web_create(user: Json<User>) -> String{
-    create(fill_user_with_userjson(&user))
+    create(&fill_user_with_userjson(&user))
 }
 
 
@@ -108,10 +108,10 @@ pub fn web_create(user: Json<User>) -> String{
 ///
 /// Usage:  
 /// ```rust
-/// delete(user)
+/// delete(&user)
 /// ```
 /// 
-pub fn delete(user: User) -> String {
+pub fn delete(user: &User) -> String {
     let conn =  sqlite::open(appconfig::DATABASE_FILE).expect("Database not readable!"); //we can unwrap we checked the file exists
 
     let result: String = "SUCCESS".to_string();
@@ -132,12 +132,12 @@ pub fn delete(user: User) -> String {
 ///
 /// Usage:  
 /// ```rust
-///web_delete(user)
+/// web_delete(user)
 /// ```
 /// 
 #[post("/v1/test/delete", format = "json", data = "<user>")]
 pub fn web_delete(user: Json<User>) -> String{
-    delete(fill_user_with_userjson(&user))
+    delete(&fill_user_with_userjson(&user))
 }
 
 /// query(name: String) searches for a name in the database and returns those records in string format
@@ -278,15 +278,9 @@ mod tests {
 
         };
         
-        let t = create(user);
+        let t = create(&user);
         assert!(t.contains("SUCCESS"));
-
-        let user = User{
-            name: "test_suite".to_owned(),
-            function: "Developer".to_owned(),
-
-        };
-        let t = delete(user);
+        let t = delete(&user);
         println!("{}", t);
         assert!(t.contains("SUCCESS"));
 
