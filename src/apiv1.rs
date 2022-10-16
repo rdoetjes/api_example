@@ -10,6 +10,15 @@ pub struct User {
     name: String,
     function: String,
 }
+impl Default for User {
+    fn default () -> User {
+        User{
+            name: "".to_owned(),
+            function: "".to_owned(),
+        }
+    }
+}
+
 
 /*
 The url is build up as /<version>/<suite>/<function>
@@ -26,9 +35,7 @@ pub fn sayhi(name: String, age: u8) -> String{
     }
 }
 
-
-#[post("/v1/test/create", format = "json", data = "<user>")]
-pub fn create(user: Json<User>) -> String{
+pub fn create(user: User) -> String{
     let conn =  sqlite::open(appconfig::DATABASE_FILE).expect("Database not readable!"); //we can unwrap we checked the file exists
 
     let result: String = "SUCCESS".to_string();
@@ -42,8 +49,19 @@ pub fn create(user: Json<User>) -> String{
     result
 }
 
-#[post("/v1/test/delete", format = "json", data = "<user>")]
-pub fn delete(user: Json<User>) -> String{
+fn fill_user_with_userjson(user: &Json<User>) -> User {
+    let mut t = User::default();
+    t.name = user.name.to_owned();
+    t.function = user.function.to_owned();
+    t
+}
+
+#[post("/v1/test/create", format = "json", data = "<user>")]
+pub fn web_create(user: Json<User>) -> String{
+    create(fill_user_with_userjson(&user))
+}
+
+pub fn delete(user: User) -> String {
     let conn =  sqlite::open(appconfig::DATABASE_FILE).expect("Database not readable!"); //we can unwrap we checked the file exists
 
     let result: String = "SUCCESS".to_string();
@@ -53,8 +71,12 @@ pub fn delete(user: Json<User>) -> String{
             return format!("Problem running query: {:?}", e)
         },
     };
-
     result
+}
+
+#[post("/v1/test/delete", format = "json", data = "<user>")]
+pub fn web_delete(user: Json<User>) -> String{
+    delete(fill_user_with_userjson(&user))
 }
 
 #[get("/v1/test/query/<name>")]
@@ -170,7 +192,7 @@ mod tests {
 
         };
         
-        let t = create(rocket::serde::json::Json(user));
+        let t = create(user);
         assert!(t.contains("SUCCESS"));
 
         let user = User{
@@ -178,7 +200,7 @@ mod tests {
             function: "Developer".to_owned(),
 
         };
-        let t = delete(rocket::serde::json::Json(user));
+        let t = delete(user);
         println!("{}", t);
         assert!(t.contains("SUCCESS"));
 
